@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EvidentX - Digital Forensic Evidence Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-sky-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                        Evident<span class="text-teal-400">X</span>
+                    </a>
+                    <span class="text-[10px] text-slate-400 font-mono block -mt-1">Digital Forensic Evidence Management System</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+                <a href="/dashboard" class="text-teal-400 border-b-2 border-teal-400 pb-1">Dashboard</a>
+                <a href="/cases" class="hover:text-teal-400 transition-colors">Cases</a>
+                <a href="/evidence" class="hover:text-teal-400 transition-colors">Evidence Vault</a>
+                <a href="/custody" class="hover:text-teal-400 transition-colors">Chain of Custody</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/users" class="hover:text-teal-400 transition-colors">User Management</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <span class="text-xs font-bold text-white block" sec:authentication="name">Officer</span>
+                    <span class="text-[10px] text-teal-400 font-mono uppercase" sec:authentication="principal.authorities">ROLE</span>
+                </div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition cursor-pointer">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block font-mono">Total Cases</span>
+                <div class="text-2xl font-black text-white mt-2" th:text="${stats.totalCases}">0</div>
+                <div class="text-[11px] text-slate-400 mt-1 font-mono">
+                    <span class="text-teal-400" th:text="${stats.openCases} + ' Open'">0 Open</span> • 
+                    <span class="text-sky-400" th:text="${stats.inProgressCases} + ' In Progress'">0 Active</span>
+                </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block font-mono">Evidence Vault</span>
+                <div class="text-2xl font-black text-white mt-2" th:text="${stats.totalEvidence}">0</div>
+                <div class="text-[11px] text-teal-400 mt-1 font-mono">
+                    <span th:text="${stats.verifiedIntactEvidence}">0</span> Verified Intact
+                </div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block font-mono">Chain of Custody</span>
+                <div class="text-2xl font-black text-white mt-2" th:text="${stats.totalCustodyTransfers}">0</div>
+                <div class="text-[11px] text-slate-400 mt-1 font-mono">Immutable Audit Logs</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block font-mono">Integrity Status</span>
+                <div class="text-2xl font-black text-teal-400 mt-2">100%</div>
+                <div class="text-[11px] text-slate-400 mt-1 font-mono">SHA-256 Parity Enforced</div>
+            </div>
+        </div>
+
+        <!-- Action Quick Links -->
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="/cases/new" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow transition">
+                + New Case Docket
+            </a>
+            <a href="/evidence/upload" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs tracking-wide border border-slate-700 transition">
+                + Ingest Evidence Item
+            </a>
+            <a href="/custody/transfer" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs tracking-wide border border-slate-700 transition">
+                Record Custody Transfer
+            </a>
+        </div>
+
+        <!-- Recent Cases Grid -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300 font-mono">
+                    Active Case Dockets
+                </h2>
+                <a href="/cases" class="text-xs font-semibold text-teal-400 hover:underline">View All &rarr;</a>
+            </div>
+            <div class="divide-y divide-slate-800/60 font-sans">
+                <div th:each="c : ${recentCases}" class="py-3 flex items-center justify-between hover:bg-slate-800/30 px-2 rounded-lg transition">
+                    <div>
+                        <span class="font-mono text-xs text-teal-400 font-bold" th:text="${c.caseNumber}">CASE-001</span>
+                        <a th:href="@{'/cases/' + ${c.id}}" class="text-sm font-bold text-white hover:text-teal-300 ml-2" th:text="${c.caseName}">Case Name</a>
+                        <div class="text-xs text-slate-400 mt-0.5">
+                            <span th:text="${c.category}">CATEGORY</span> • Assigned to <span th:text="${c.assignedInvestigatorName}">Investigator</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-950 text-teal-300 border border-teal-800" th:text="${c.status}">
+                            STATUS
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

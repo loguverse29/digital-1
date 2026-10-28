@@ -1,0 +1,6 @@
+{
+  "name": "Digital Evidence Management and Cyber Crime Investigation System",
+  "description": "Full-stack digital evidence management, SHA-256 cryptographic integrity verification, chain-of-custody tracking, and forensic reporting system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

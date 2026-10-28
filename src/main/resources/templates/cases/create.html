@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open New Case | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                Evident<span class="text-teal-400">X</span>
+            </a>
+            <div class="flex gap-4 text-xs font-semibold">
+                <a href="/dashboard" class="text-slate-300 hover:text-teal-400">Dashboard</a>
+                <a href="/cases" class="text-teal-400">Cases</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+        <div>
+            <h1 class="text-2xl font-bold text-white">Open New Criminal Case Docket</h1>
+            <p class="text-xs text-slate-400 mt-1">Initialize a digital crime investigation and chain-of-custody ledger.</p>
+        </div>
+
+        <form th:action="@{/cases/new}" th:object="${caseDto}" method="post" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Case Investigation Title</label>
+                <input type="text" th:field="*{caseName}" required placeholder="Operation Chimera: Server Intrusion"
+                    class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Crime Category</label>
+                    <input type="text" th:field="*{category}" required placeholder="RANSOMWARE, FRAUD, INSIDER_THREAT"
+                        class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Priority</label>
+                    <select th:field="*{priority}" class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+                        <option value="CRITICAL">CRITICAL</option>
+                        <option value="HIGH" selected>HIGH</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="LOW">LOW</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Lead Assigned Investigator</label>
+                <select th:field="*{assignedInvestigatorId}" class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+                    <option th:each="inv : ${investigators}" th:value="${inv.id}" th:text="${inv.fullName + ' (@' + inv.username + ')'}">Investigator</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Incident Brief & Preliminary Narrative</label>
+                <textarea th:field="*{description}" rows="3" placeholder="Provide background on the breach, seized artifacts, and jurisdiction."
+                    class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <a href="/cases" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Cancel</a>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow">
+                    Create Case Docket
+                </button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

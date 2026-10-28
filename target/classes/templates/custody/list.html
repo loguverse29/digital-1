@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain of Custody Ledger | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                Evident<span class="text-teal-400">X</span>
+            </a>
+            <div class="flex gap-4 text-xs font-semibold">
+                <a href="/dashboard" class="text-slate-300 hover:text-teal-400">Dashboard</a>
+                <a href="/cases" class="text-slate-300 hover:text-teal-400">Cases</a>
+                <a href="/evidence" class="text-slate-300 hover:text-teal-400">Evidence Vault</a>
+                <a href="/custody" class="text-teal-400 border-b-2 border-teal-400 pb-1">Chain of Custody</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/users" class="text-slate-300 hover:text-teal-400">User Management</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Chain of Custody (CoC) Ledger</h1>
+                <p class="text-xs text-slate-400 mt-1">Immutable, tamper-evident chronological ledger of evidence transfers and forensics lab checkouts</p>
+            </div>
+            <a href="/custody/transfer" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow">
+                + Record Transfer
+            </a>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/50 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+                    <tr>
+                        <th class="px-4 py-3">Timestamp</th>
+                        <th class="px-4 py-3">Evidence Number</th>
+                        <th class="px-4 py-3">Action</th>
+                        <th class="px-4 py-3">Custody Transfer</th>
+                        <th class="px-4 py-3">Facility / Location</th>
+                        <th class="px-4 py-3 text-right">Signature Token</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-sans">
+                    <tr th:each="c : ${custodyPage.content}" class="hover:bg-slate-800/30 transition">
+                        <td class="px-4 py-3 text-slate-400 font-mono text-[11px]" th:text="${c.timestamp}">2026-10-22</td>
+                        <td class="px-4 py-3 font-mono font-bold text-teal-400" th:text="${c.evidence.evidenceNumber}">EVD-01</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-950 text-teal-300 border border-teal-800" th:text="${c.action}">ACTION</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="text-slate-400" th:text="${c.previousCustodian}">Prev</span> &rarr;
+                            <span class="font-bold text-white" th:text="${c.newCustodian}">New</span>
+                        </td>
+                        <td class="px-4 py-3 text-slate-400" th:text="${c.location}">Location</td>
+                        <td class="px-4 py-3 text-right font-mono text-[10px] text-teal-400" th:text="${c.custodySignatureToken}">SIG-TOKEN</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Custody Transfer | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                Evident<span class="text-teal-400">X</span>
+            </a>
+            <div class="flex gap-4 text-xs font-semibold">
+                <a href="/dashboard" class="text-slate-300 hover:text-teal-400">Dashboard</a>
+                <a href="/custody" class="text-teal-400">Chain of Custody</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+        <div>
+            <h1 class="text-2xl font-bold text-white">Record Evidence Custody Handover</h1>
+            <p class="text-xs text-slate-400 mt-1">Logs an append-only legal chain-of-custody transfer event with cryptographic signature token.</p>
+        </div>
+
+        <form th:action="@{/custody/transfer}" th:object="${custodyDto}" method="post" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Target Evidence Item</label>
+                    <select th:field="*{evidenceId}" required class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+                        <option th:each="e : ${evidenceList}" th:value="${e.id}" th:text="${e.evidenceNumber + ' - ' + e.evidenceName}">Evidence</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Custody Action</label>
+                    <select th:field="*{action}" class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+                        <option value="TRANSFERRED">TRANSFERRED</option>
+                        <option value="LAB_ANALYSIS">LAB_ANALYSIS</option>
+                        <option value="COURT_PRODUCTION">COURT_PRODUCTION</option>
+                        <option value="SECURE_STORAGE_DEPOSIT">SECURE_STORAGE_DEPOSIT</option>
+                        <option value="RETURN_TO_OWNER">RETURN_TO_OWNER</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Releasing Custodian (Previous)</label>
+                    <input type="text" th:field="*{previousCustodian}" required placeholder="Marcus Thorne (Vault Custodian)"
+                        class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Receiving Custodian (New)</label>
+                    <input type="text" th:field="*{newCustodian}" required placeholder="Insp. Rajesh Kumar (Lead Investigator)"
+                        class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Transfer Facility / Physical Location</label>
+                <input type="text" th:field="*{location}" placeholder="Forensic Lab Alpha - Workstation 02"
+                    class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2.5 rounded-xl border border-slate-700">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Operational Remarks & Purpose</label>
+                <textarea th:field="*{remarks}" rows="2" placeholder="Autopsy file system triage and recovered deleted records check."
+                    class="w-full bg-slate-800 text-slate-100 text-xs px-3 py-2 rounded-xl border border-slate-700"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <a href="/custody" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Cancel</a>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow">
+                    Sign & Commit Custody Record
+                </button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

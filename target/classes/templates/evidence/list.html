@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Evidence Vault | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                Evident<span class="text-teal-400">X</span>
+            </a>
+            <div class="flex gap-4 text-xs font-semibold">
+                <a href="/dashboard" class="text-slate-300 hover:text-teal-400">Dashboard</a>
+                <a href="/cases" class="text-slate-300 hover:text-teal-400">Cases</a>
+                <a href="/evidence" class="text-teal-400 border-b-2 border-teal-400 pb-1">Evidence Vault</a>
+                <a href="/custody" class="text-slate-300 hover:text-teal-400">Chain of Custody</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/users" class="text-slate-300 hover:text-teal-400">User Management</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Forensic Evidence Vault</h1>
+                <p class="text-xs text-slate-400 mt-1">Cryptographically fingerprinted digital exhibits and physical storage tracking</p>
+            </div>
+            <a href="/evidence/upload" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow">
+                + Ingest Evidence
+            </a>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/50 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+                    <tr>
+                        <th class="px-4 py-3">Exhibit Number</th>
+                        <th class="px-4 py-3">Evidence Name</th>
+                        <th class="px-4 py-3">Type</th>
+                        <th class="px-4 py-3">Baseline SHA-256 Checksum</th>
+                        <th class="px-4 py-3">Integrity Status</th>
+                        <th class="px-4 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-sans">
+                    <tr th:each="ev : ${evidenceList}" class="hover:bg-slate-800/30 transition">
+                        <td class="px-4 py-3 font-mono font-bold text-teal-400" th:text="${ev.evidenceNumber}">EVD-01</td>
+                        <td class="px-4 py-3 font-bold text-white">
+                            <span th:text="${ev.evidenceName}">Name</span>
+                            <span class="block text-[10px] text-slate-400 font-mono" th:text="${ev.controlledStorageIdentifier}">VAULT-01</span>
+                        </td>
+                        <td class="px-4 py-3 font-mono text-[11px] text-slate-300" th:text="${ev.evidenceType}">TYPE</td>
+                        <td class="px-4 py-3 font-mono text-[11px] text-slate-400" th:text="${#strings.substring(ev.originalSha256Hash, 0, 16) + '...'}">HASH</td>
+                        <td class="px-4 py-3">
+                            <span th:if="${ev.verifiedStatus == 'VERIFIED_INTACT'}" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800">
+                                VERIFIED INTACT
+                            </span>
+                            <span th:unless="${ev.verifiedStatus == 'VERIFIED_INTACT'}" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-950 text-rose-400 border border-rose-800">
+                                MISMATCH
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-right space-x-2">
+                            <a th:href="@{'/evidence/' + ${ev.id}}" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-teal-400 text-xs font-medium">Verify & Details</a>
+                            <a th:if="${ev.fileStoragePath != null}" th:href="@{'/evidence/' + ${ev.id} + '/download'}" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium">Download</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

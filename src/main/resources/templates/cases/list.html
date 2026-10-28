@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investigation Cases | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                    Evident<span class="text-teal-400">X</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+                <a href="/dashboard" class="hover:text-teal-400">Dashboard</a>
+                <a href="/cases" class="text-teal-400 border-b-2 border-teal-400 pb-1">Cases</a>
+                <a href="/evidence" class="hover:text-teal-400">Evidence Vault</a>
+                <a href="/custody" class="hover:text-teal-400">Chain of Custody</a>
+                <a sec:authorize="hasRole('ADMIN')" href="/admin/users" class="hover:text-teal-400">User Management</a>
+            </nav>
+            <div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">Logout</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">Investigation Cases</h1>
+                <p class="text-xs text-slate-400 mt-1">Official criminal case dockets and digital forensic investigations</p>
+            </div>
+            <a href="/cases/new" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow transition">
+                + New Case
+            </a>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/50 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+                    <tr>
+                        <th class="px-4 py-3">Docket Number</th>
+                        <th class="px-4 py-3">Case Title</th>
+                        <th class="px-4 py-3">Category</th>
+                        <th class="px-4 py-3">Lead Investigator</th>
+                        <th class="px-4 py-3">Priority</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-sans">
+                    <tr th:each="c : ${casesPage.content}" class="hover:bg-slate-800/30 transition">
+                        <td class="px-4 py-3 font-mono font-bold text-teal-400" th:text="${c.caseNumber}">CASE-01</td>
+                        <td class="px-4 py-3 font-bold text-white" th:text="${c.caseName}">Title</td>
+                        <td class="px-4 py-3 text-slate-300 font-mono text-[11px]" th:text="${c.category}">CATEGORY</td>
+                        <td class="px-4 py-3 text-slate-300" th:text="${c.assignedInvestigatorName}">Investigator</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-800" th:text="${c.priority}">HIGH</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-950 text-teal-300 border border-teal-800" th:text="${c.status}">OPEN</span>
+                        </td>
+                        <td class="px-4 py-3 text-right space-x-2">
+                            <a th:href="@{'/cases/' + ${c.id}}" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-teal-400 text-xs font-medium">View Dossier</a>
+                            <a th:href="@{'/reports/cases/' + ${c.id} + '/pdf'}" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium">PDF Dossier</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

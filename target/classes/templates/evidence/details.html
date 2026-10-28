@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidence Details & Verification | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                Evident<span class="text-teal-400">X</span>
+            </a>
+            <div class="flex gap-4 text-xs font-semibold">
+                <a href="/dashboard" class="text-slate-300 hover:text-teal-400">Dashboard</a>
+                <a href="/cases" class="text-slate-300 hover:text-teal-400">Cases</a>
+                <a href="/evidence" class="text-teal-400">Evidence Vault</a>
+                <a href="/custody" class="text-slate-300 hover:text-teal-400">Chain of Custody</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="p-4 rounded-xl bg-teal-950/80 border border-teal-500/40 text-teal-300 text-xs font-medium">
+            <span th:text="${successMessage}">Success</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <span class="font-mono text-xs font-bold text-teal-400" th:text="${evidence.evidenceNumber}">EVD-NUMBER</span>
+                <h1 class="text-2xl font-bold text-white mt-1" th:text="${evidence.evidenceName}">Evidence Name</h1>
+                <p class="text-xs text-slate-400 mt-1">
+                    Belongs to Case: <a th:href="@{'/cases/' + ${evidence.investigationCase.id}}" class="text-teal-400 hover:underline" th:text="${evidence.investigationCase.caseNumber}">CASE</a>
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <form th:if="${evidence.fileStoragePath != null}" th:action="@{'/evidence/' + ${evidence.id} + '/verify-stored'}" method="post" class="inline">
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow">
+                        Live Vault SHA-256 Check
+                    </button>
+                </form>
+                <a th:if="${evidence.fileStoragePath != null}" th:href="@{'/evidence/' + ${evidence.id} + '/download'}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700">
+                    Download Raw Evidence
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-teal-400 font-mono">Cryptographic Fingerprint</h2>
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 break-all">
+                    <span class="text-slate-500 block text-[10px] uppercase font-bold">Original Baseline SHA-256</span>
+                    <span th:text="${evidence.originalSha256Hash}">SHA-256</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">Locker Location:</span>
+                        <span class="font-mono text-slate-300" th:text="${evidence.controlledStorageIdentifier}">VAULT-01</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">Verification Status:</span>
+                        <span class="font-bold text-teal-400" th:text="${evidence.verifiedStatus}">VERIFIED_INTACT</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">Original Filename:</span>
+                        <span class="font-mono text-slate-300" th:text="${evidence.originalFilename}">file.raw</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">Storage Mode:</span>
+                        <span class="font-mono text-slate-300" th:text="${evidence.fileStoragePath != null ? 'SECURE_VAULT' : 'PRECOMPUTED'}">VAULT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hash History -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-teal-400 font-mono">Verification Log</h2>
+                <div class="divide-y divide-slate-800 max-h-60 overflow-y-auto">
+                    <div th:each="h : ${hashHistory}" class="py-2.5 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold" th:class="${h.verificationOutcome.name() == 'MATCH' ? 'text-teal-400' : 'text-rose-400'}" th:text="${h.verificationOutcome}">MATCH</span>
+                            <span class="text-[10px] text-slate-500 font-mono" th:text="${h.verificationTimestamp}">2026-10-22</span>
+                        </div>
+                        <div class="font-mono text-[10px] text-slate-400 truncate mt-0.5" th:text="${h.calculatedHash}">HASH</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5" th:text="${h.notes}">Notes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

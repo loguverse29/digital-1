@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Dossier | EvidentX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/dashboard" class="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
+                Evident<span class="text-teal-400">X</span>
+            </a>
+            <div class="flex gap-4 text-xs font-semibold">
+                <a href="/dashboard" class="text-slate-300 hover:text-teal-400">Dashboard</a>
+                <a href="/cases" class="text-teal-400">Cases</a>
+                <a href="/evidence" class="text-slate-300 hover:text-teal-400">Evidence Vault</a>
+                <a href="/custody" class="text-slate-300 hover:text-teal-400">Chain of Custody</a>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <span class="font-mono text-xs font-bold text-teal-400" th:text="${caseItem.caseNumber}">CASE-NUMBER</span>
+                <h1 class="text-2xl font-bold text-white mt-1" th:text="${caseItem.caseName}">Case Name</h1>
+                <p class="text-xs text-slate-400 mt-1" th:text="${caseItem.description}">Description</p>
+            </div>
+            <div class="flex gap-3">
+                <a th:href="@{'/evidence/upload?caseId=' + ${caseItem.id}}" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs tracking-wide shadow">
+                    + Ingest Evidence
+                </a>
+                <a th:href="@{'/reports/cases/' + ${caseItem.id} + '/pdf'}" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700">
+                    Export PDF Dossier
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300 font-mono">Linked Evidence Items</h2>
+            <div class="divide-y divide-slate-800">
+                <div th:each="ev : ${caseItem.evidences}" class="py-3 flex items-center justify-between">
+                    <div>
+                        <span class="font-mono text-xs text-teal-400 font-bold" th:text="${ev.evidenceNumber}">EVD-01</span>
+                        <a th:href="@{'/evidence/' + ${ev.id}}" class="text-sm font-bold text-white hover:text-teal-300 ml-2" th:text="${ev.evidenceName}">Name</a>
+                        <div class="text-xs text-slate-400 mt-0.5">
+                            SHA-256: <span class="font-mono text-[11px] text-slate-300" th:text="${ev.originalSha256Hash}">HASH</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a th:href="@{'/evidence/' + ${ev.id}}" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-teal-400 text-xs font-medium">Inspect</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
