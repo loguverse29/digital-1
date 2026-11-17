@@ -95,13 +95,4 @@ Flyway will automatically execute `V1__init_schema.sql` and `V2__seed_demo_data.
 
 ---
 
-## 5. College Viva Voce Defense Questions & Answers
 
-**Q1: Why is SHA-256 used for digital forensics instead of MD5 or SHA-1?**  
-*Answer:* MD5 and SHA-1 have known practical collision attacks where different payloads produce matching hashes. SHA-256 provides 256 bits of cryptographic entropy with zero known collisions. Any 1-bit alteration flips approximately 50% of the output bits (the *avalanche effect*), proving whether evidence was altered.
-
-**Q2: What is Chain of Custody and why is it legally required?**  
-*Answer:* Chain of Custody (CoC) is the chronological record of seizure, custody, transfer, analysis, and disposition of physical/electronic evidence. Under Rule 901 of the Federal Rules of Evidence and ISO/IEC 27037, an unbroken CoC establishes that evidence presented in trial is identical to what was seized at the crime scene.
-
-**Q3: How does the system handle concurrent custody transfers?**  
-*Answer:* Transfers execute within `@Transactional` boundaries using JPA entity locking and append-only database records, ensuring sequential timestamping and unforgeable digital signature tokens.
